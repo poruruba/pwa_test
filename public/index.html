@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja" style="height:100vh;">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src * 'unsafe-inline'; media-src *; img-src * data: content: blob:;">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="css/start.css">
+  <script src="js/methods_bootstrap.js"></script>
+  <script src="js/components_bootstrap.js"></script>
+  <script src="js/vue_utils.js"></script>
+
+  <script src="dist/js/vconsole.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+  <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+  <link rel="manifest" href="manifest.json">
+
+  <title>パスワードマネージャ</title>
+</head>
+<body style="height:100%;">
+  <div id="top" class="container" style="height:100%;">
+    <h1>パスワードマネージャ</h1>
+    <hr>
+
+    <button class="btn btn-default btn-sm pull-right" v-on:click="set_apikey">API Key</button>
+    <button class="btn btn-default btn-sm pull-right" v-on:click="do_subscribe"><span v-if="client_id">Unsubscribe</span><span v-else>Subscribe</span></button>
+
+    <button class="btn btn-primary" v-on:click="show_insert_dialog">新規追加</button>
+
+    <table class="table table-striped">
+      <thead><tr>
+        <th>Copy</th>
+        <th>Name</th>
+        <th>参照/変更/削除</th>
+      </tr></thead>
+      <tbody>
+        <tr v-for="(value, index) in pwd_list">
+          <td>
+            <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="value.password"></button>
+          </td>
+          <td><a v-on:click="show_get_dialog(index)"><strong>{{value.name}}</strong></a></td>
+          <td>
+            <button class="btn btn-default btn-sm" v-on:click="show_get_dialog(index)">参照</button>
+            <button class="btn btn-default btn-sm" v-on:click="show_update_dialog(index)">変更</button>
+            <button class="btn btn-primary btn-sm" v-on:click="password_delete(index)">削除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <modal-dialog id="insert_dialog" size="lg">
+      <div slot="content">
+        <div class="modal-header">
+          <h4>パスワードの追加</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>name</label> <input type="text" class="form-control" v-model="insert_name">
+          </div>
+          <div class="form-group">
+            <label>url</label> <input type="text" class="form-control" v-model="insert_url">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="insert_userid"></button>
+            <label>userid</label> <input type="text" class="form-control" v-model="insert_userid">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="insert_password"></button>
+            <label>password</label> <input type="text" class="form-control" v-model="insert_password">
+          </div>
+          <button class="btn btn-default btn-sm" v-on:click="password_create">パスワード自動生成</button><br>
+          <input v-model="chk_upper" id="chk_upper" type="checkbox" class="form-inline">
+          <label for="chk_upper">大文字含む</label>
+          <input v-model="chk_number" id="chk_number" type="checkbox" class="form-inline">
+          <label for="chk_number">数字含む</label><br>
+          <input type="checkbox" v-model="chk_exception" id="chk_exception">
+          <label for="chk_exception">IとlとOを除く(大文字のアイと小文字のエルと大文字のオー)</label><br>
+          <input v-model="chk_special" id="chk_special" type="checkbox" class="form-inline">
+          <label for="chk_special">特殊文字含む</label>
+          <span class="form-inline">
+            <select class="form-control" v-model="chk_special_pattern">
+              <option value="-+*/_">-+*/_</option>
+              <option value="=-+*/;,._">=-+*/;,._</option>
+              <option value="@#$%&?!">@#$%&?!</option>
+              <option value="!@#$%^&*()_+-=[]{}|">!@#$%^&*()_+-=[]{}|</option>
+              <option value="!#$%&()=-\@+*/?'^~|`;,._[]{}">!#$%&()=-\@+*/?'^~|`;,._[]{}</option>
+            </select>
+          </span>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" v-on:click="password_insert">作成</button>
+          <button class="btn btn-default" v-on:click="dialog_close('#insert_dialog')">キャンセル</button>
+        </div>
+      </div>
+    </modal-dialog>
+
+    <modal-dialog id="update_dialog" size="lg">
+      <div slot="content">
+        <div class="modal-header">
+          <h4>パスワードの変更</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>name</label> <input type="text" class="form-control" v-model="update_name">
+          </div>
+          <div class="form-group">
+            <label>url</label><input type="text" class="form-control" v-model="update_url">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="update_userid"></button>
+            <label>userid</label><input type="text" class="form-control" v-model="update_userid">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="insert_password"></button>
+            <label>password</label> <input type="text" class="form-control" v-model="insert_password">
+          </div>
+          <button class="btn btn-default btn-sm" v-on:click="password_create">パスワード自動生成</button><br>
+          <input v-model="chk_upper" id="chk_upper" type="checkbox" class="form-inline">
+          <label for="chk_upper">大文字含む</label>
+          <input v-model="chk_number" id="chk_number" type="checkbox" class="form-inline">
+          <label for="chk_number">数字含む</label><br>
+          <input type="checkbox" v-model="chk_exception" id="chk_exception">
+          <label for="chk_exception">IとlとOを除く(大文字のアイと小文字のエルと大文字のオー)</label><br>
+          <input v-model="chk_special" id="chk_special" type="checkbox" class="form-inline">
+          <label for="chk_special">特殊文字含む</label>
+          <span class="form-inline">
+            <select class="form-control" v-model="chk_special_pattern">
+              <option value="-+*/_">-+*/_</option>
+              <option value="=-+*/;,._">=-+*/;,._</option>
+              <option value="@#$%&?!">@#$%&?!</option>
+              <option value="!@#$%^&*()_+-=[]{}|">!@#$%^&*()_+-=[]{}|</option>
+              <option value="!#$%&()=-\@+*/?'^~|`;,._[]{}">!#$%&()=-\@+*/?'^~|`;,._[]{}</option>
+            </select>
+          </span>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" v-on:click="password_update">変更</button>
+          <button class="btn btn-default" v-on:click="dialog_close('#update_dialog')">キャンセル</button>
+        </div>
+      </div>
+    </modal-dialog>    
+
+    <modal-dialog id="get_dialog" size="lg">
+      <div slot="content">
+        <div class="modal-header">
+          <h4>パスワードの表示</h4>
+        </div>
+        <div class="modal-body">
+          <span v-if="get">
+            <div class="form-group">
+              <label>name</label> <input type="text" class="form-control" v-model="get.name" readonly>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="get.url"></button>
+              <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-globe" v-on:click="show_newpage(get.url)"></button>
+              <label>url</label><input type="text" class="form-control" v-model="get.url" readonly>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="get.userid"></button>
+              <label>userid</label> <input type="text" class="form-control" v-model="get.userid" readonly>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="get.password"></button>
+              <label>password</label> <input type="text" class="form-control" v-model="get.password" readonly>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-default" v-on:click="dialog_close('#get_dialog')">閉じる</button>
+        </div>
+      </div>
+    </modal-dialog>    
+
+    <!-- for progress-dialog -->
+    <progress-dialog v-bind:title="progress_title"></progress-dialog>
+  </div>
+
+  <script src="js/start.js"></script>
+</body>

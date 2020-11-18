@@ -1,0 +1,29 @@
+{
+  "name": "express_template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "swagger": "node generate_swagger.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "jwt-decode": "^3.0.0-beta.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "path": "^0.12.7",
+    "serve-favicon": "^2.5.0",
+    "uuid": "^8.3.1",
+    "web-push": "^3.4.4",
+    "yaml": "^1.10.0"
+  }
+}
