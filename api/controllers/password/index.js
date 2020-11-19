@@ -53,7 +53,7 @@ exports.handler = async (event, context, callback) => {
 	}else
 	if( event.path == '/pwd-list' ){
 		var list = [];
-		pwd.list.forEach(item => list.push({ uuid: item.uuid, name: item.name, url: item.url, userid: item.userid, password: item.password } ));
+		pwd.list.forEach(item => list.push({ uuid: item.uuid, name: item.name, url: item.url, userid: item.userid } ));
 		return new Response({ result: list });
 	}else
 	if( event.path == '/pwd-insert' ){
