@@ -42,6 +42,7 @@ var vue_options = {
                 };
                 var json = await do_post_apikey(base_url + '/pwd-get', param, this.apikey);
                 navigator.clipboard.writeText(json.result.password);
+                this.toast_show("クリップボードにコピーしました。");
             }catch(error){
                 console.error(error);
                 alert(error);
