@@ -35,6 +35,18 @@ var vue_options = {
     computed: {
     },
     methods: {
+        clip_copy: async function(index){
+            try{
+                var param = {
+                    uuid: this.pwd_list[index].uuid,
+                };
+                var json = await do_post_apikey(base_url + '/pwd-get', param, this.apikey);
+                navigator.clipboard.writeText(json.result.password);
+            }catch(error){
+                console.error(error);
+                alert(error);
+            }
+        },
         password_create: function(){
             var passwd_num = 12;
             var passwd_number_num = this.chk_number ? 1 : 0;
@@ -87,14 +99,13 @@ var vue_options = {
             this.insert_password = passwd;
         },
         password_insert: async function(){
-            var param = {
-                name: this.insert_name,
-                url: this.insert_url,
-                userid: this.insert_userid,
-                password: this.insert_password
-            };
-
             try{
+                var param = {
+                    name: this.insert_name,
+                    url: this.insert_url,
+                    userid: this.insert_userid,
+                    password: this.insert_password
+                };
                 var json = await do_post_apikey(base_url + '/pwd-insert', param, this.apikey);
                 console.log(json);
                 alert('追加しました。');
@@ -119,10 +130,10 @@ var vue_options = {
             if( !confirm('本当に削除しますか？') )
                 return;
 
-            var param = {
-                uuid: this.pwd_list[index].uuid
-            };
             try{
+                var param = {
+                    uuid: this.pwd_list[index].uuid
+                };
                 var json = await do_post_apikey(base_url + '/pwd-delete', param, this.apikey);
                 console.log(json);
                 alert('削除しました。');
@@ -136,15 +147,14 @@ var vue_options = {
             if( !confirm('本当に変更しますか？') )
                 return;
 
-            var param = {
-                uuid: this.update_uuid,
-                name: this.update_name,
-                url: this.update_url,
-                userid: this.update_userid,
-                password: this.insert_password
-            };
-
             try{
+                var param = {
+                    uuid: this.update_uuid,
+                    name: this.update_name,
+                    url: this.update_url,
+                    userid: this.update_userid,
+                    password: this.insert_password
+                };
                 var json = await do_post_apikey(base_url + '/pwd-update', param, this.apikey);
                 alert('変更しました。');
                 this.password_list_update();
@@ -171,11 +181,10 @@ var vue_options = {
             this.dialog_open("#update_dialog");
         },
         show_get_dialog: async function(index){
-            var param = {
-                uuid: this.pwd_list[index].uuid,
-            };
-
             try{
+                var param = {
+                    uuid: this.pwd_list[index].uuid,
+                };
                 var json = await do_post_apikey(base_url + '/pwd-get', param, this.apikey);
                 this.get = json.result;
                 this.dialog_open("#get_dialog");
