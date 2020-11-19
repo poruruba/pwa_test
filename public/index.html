@@ -53,7 +53,7 @@
       <tbody>
         <tr v-for="(value, index) in pwd_list">
           <td>
-            <button class="btn btn-default btn-sm clip_btn glyphicon glyphicon-paperclip" v-bind:data-clipboard-text="value.password"></button>
+            <button class="btn btn-default btn-sm glyphicon glyphicon-paperclip" v-on:click="clip_copy(index)"></button>
           </td>
           <td><a v-on:click="show_get_dialog(index)"><strong>{{value.name}}</strong></a></td>
           <td>
