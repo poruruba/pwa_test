@@ -46,7 +46,7 @@
 
     <table class="table table-striped">
       <thead><tr>
-        <th>Copy</th>
+        <th>Copy/Open</th>
         <th>Name</th>
         <th>参照/変更/削除</th>
       </tr></thead>
@@ -54,6 +54,7 @@
         <tr v-for="(value, index) in pwd_list">
           <td>
             <button class="btn btn-default btn-sm glyphicon glyphicon-paperclip" v-on:click="clip_copy(index)"></button>
+            <button class="btn btn-default btn-sm glyphicon glyphicon-globe" v-on:click="show_newpage(value.url)"></button>
           </td>
           <td><a v-on:click="show_get_dialog(index)"><strong>{{value.name}}</strong></a></td>
           <td>
