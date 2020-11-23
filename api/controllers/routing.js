@@ -74,6 +74,8 @@ folders.forEach(folder => {
 
         console.log(path, method, handler, JSON.stringify(options));
         if( options.func_type == "express"){
+          func_table[folder] = require('./' + folder)[handler];
+
           switch(method){
             case 'get': {
               router.get(path, func_table[folder]);
