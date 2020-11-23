@@ -44,7 +44,7 @@ folders.forEach(folder => {
         if( docOperationId.length == 1 )
           options.operationId = docOperationId[0].value.value;
 
-          // オプションタグ: x-hanndler
+        // オプションタグ: x-hanndler
         // x-hanndler: 任意
         const docHandler = docMethod.value.items.filter(item => item.key.value == 'x-handler' );
         let handler = 'handler';
@@ -62,7 +62,7 @@ folders.forEach(folder => {
           options.security = docSecurity[0].value.items[0].items[0].key.value;
 
         // オプションタグ: x-functype
-        // x-functype: (express|empty|default)
+        // x-functype: (express|empty|normal)
         const docFuncType = docMethod.value.items.filter(item => item.key.value == 'x-functype' );
         if( docFuncType.length == 1 )
           options.func_type = docFuncType[0].value.value;
@@ -350,9 +350,7 @@ function return_none(res){
     res.statusCode = 200;
     res.type('application/json');
 
-    if( res.func_type == 'alexa' ){
-        res.json({});
-    }else if(res.func_type == 'lambda'){
+    if(res.func_type == 'lambda'){
         res.json({ body: null });
     }else{
         res.json({});
