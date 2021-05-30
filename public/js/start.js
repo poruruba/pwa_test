@@ -222,6 +222,10 @@ var vue_options = {
                         var client_id = this.client_id;
                         this.client_id = null;
                         Cookies.remove('client_id');
+                        registration.pushManager.getSubscription().then((subscription) => {
+                            subscription.unsubscribe();
+                            alert('通知を解除しました。');
+                        });
                         await do_post_apikey(base_url + '/pwd-delete-object', { client_id: client_id }, this.apikey);
                     }else{
                         var json = await do_post_apikey(base_url + '/pwd-get-pubkey', {}, this.apikey);
