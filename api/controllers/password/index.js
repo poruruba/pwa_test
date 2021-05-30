@@ -37,8 +37,6 @@ exports.handler = async (event, context, callback) => {
 		delete pwd.objects[body.client_id];
 		await writePasswordFile(apikey, pwd);
 
-		await sendNotification(pwd.vapidkey, object, { title: "パスワードマネージャ", body: "通知を解除しました。"} );
-
 		return new Response({});
 	}else
 	if( event.path == '/pwd-get' ){
