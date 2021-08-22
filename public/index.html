@@ -30,6 +30,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
   <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
   <link rel="manifest" href="manifest.json">
   <link rel="manifest" href="manifest.webmanifest" />
   <script async src="https://cdn.jsdelivr.net/npm/pwacompat" crossorigin="anonymous"></script>
@@ -57,6 +59,7 @@
           <td>
             <button class="btn btn-default btn-sm glyphicon glyphicon-paperclip" v-on:click="clip_copy(index)"></button>
             <button class="btn btn-default btn-sm glyphicon glyphicon-globe" v-on:click="show_newpage(value.url)"></button>
+            <button class="btn btn-default btn-sm glyphicon glyphicon-qrcode" v-on:click="show_qrcode(index)"></button>
           </td>
           <td><a v-on:click="show_get_dialog(index)"><strong>{{value.name}}</strong></a></td>
           <td>
@@ -189,8 +192,23 @@
           <button class="btn btn-default" v-on:click="dialog_close('#get_dialog')">閉じる</button>
         </div>
       </div>
-    </modal-dialog>    
-
+    </modal-dialog>
+      
+    <modal-dialog id="qrcode_dialog" size="lg">
+      <div slot="content">
+        <div class="modal-header">
+          <h4>QRコードの表示</h4>
+        </div>
+        <div class="modal-body">
+          <center><div id="qrcode_area"></div></center>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-default" v-on:click="dialog_close('#qrcode_dialog')">閉じる</button>
+        </div>
+      </div>
+    </modal-dialog>
+      
+      
     <!-- for progress-dialog -->
     <progress-dialog v-bind:title="progress_title"></progress-dialog>
   </div>
