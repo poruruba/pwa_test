@@ -35,6 +35,21 @@ var vue_options = {
     computed: {
     },
     methods: {
+        show_qrcode: async function (index) {
+            try{
+                var param = {
+                    uuid: this.pwd_list[index].uuid,
+                };
+                var json = await do_post_apikey(base_url + '/pwd-get', param, this.apikey);
+                var element = document.querySelector('#qrcode_area');
+                element.innerHTML = '';
+                new QRCode(element, json.result.password);
+                this.dialog_open("#qrcode_dialog");
+            } catch (error) {
+                console.error(error);
+                alert(error);
+            }
+        },
         clip_copy: async function(index){
             try{
                 var param = {
